@@ -1,11 +1,7 @@
 import {
-  Button,
   Dimensions,
   Keyboard,
-  KeyboardAvoidingView,
-  Platform,
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -46,14 +42,7 @@ const CreateTodoScreen: FC<Props> = ({navigation}) => {
       <KeyboardAvoidingArea>
         <Header title={'Create To Do'} showBack />
         <View style={styles.form}>
-          <View
-            style={{
-              height: 45,
-              justifyContent: 'center',
-              borderWidth: 0.5,
-              borderRadius: 16,
-              width: Dimensions.get('screen').width - 40,
-            }}>
+          <View style={styles.item}>
             <TextInput
               style={{paddingInlineStart: 12}}
               value={title}
@@ -62,20 +51,8 @@ const CreateTodoScreen: FC<Props> = ({navigation}) => {
               onChangeText={(text: string) => setTitle(text)}
             />
           </View>
-          <Pressable
-            style={{
-              alignSelf: 'center',
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: '#2c3e50',
-              padding: 10,
-              width: 100,
-              borderRadius: 12,
-            }}
-            onPress={handleCreate}>
-            <Text style={{color: '#fff', fontSize: 18, fontWeight: '400'}}>
-              Create
-            </Text>
+          <Pressable style={styles.pressable} onPress={handleCreate}>
+            <Text style={styles.createText}>Create</Text>
           </Pressable>
         </View>
       </KeyboardAvoidingArea>
@@ -91,6 +68,23 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
   },
+  item: {
+    height: 45,
+    justifyContent: 'center',
+    borderWidth: 0.5,
+    borderRadius: 16,
+    width: Dimensions.get('screen').width - 40,
+  },
+  pressable: {
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#2c3e50',
+    padding: 10,
+    width: 100,
+    borderRadius: 12,
+  },
+  createText: {color: '#fff', fontSize: 18, fontWeight: '400'},
 });
 
 export default CreateTodoScreen;

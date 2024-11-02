@@ -2,15 +2,17 @@ import {create} from 'zustand';
 import {Todo} from './types';
 
 interface TodoState {
+  currentTodo: Todo;
   id: number;
   incrementId: () => void;
   todos: Todo[];
   addTodo: (todo: Todo) => void;
   deleteTodo: (id: number) => void;
-  getTodoDetails: (id: number) => Todo | undefined;
+  getTodoDetails: (id: number) => void;
   changeStatus: (todo: Todo) => void;
 }
 const useTodosStore = create<TodoState>((set, get) => ({
+  currentTodo: {id: 1, isCompleted: false, title: ''},
   id: 1,
   incrementId: () => set(state => ({id: state.id + 1})),
   todos: [],
@@ -18,18 +20,16 @@ const useTodosStore = create<TodoState>((set, get) => ({
   deleteTodo: (id: number) =>
     set(state => ({todos: state.todos.filter((t: Todo) => t.id !== id)})),
   getTodoDetails: id => {
-    const state = get();
-    return state.todos.find(t => t.id === id);
+    if (!id) return;
+    set(state => ({currentTodo: state.todos.find(t => t.id === id)}));
   },
   changeStatus: (todo: Todo) => {
-    const state = get();
-    const item = state.todos.find(t => t.id === todo.id);
-    if (!item) return;
-    const updatedItem = {...item, isCompleted: !item.isCompleted};
-    const updatedTodos = state.todos.map(t =>
-      t.id === updatedItem.id ? updatedItem : t,
-    );
-    set(() => ({todos: updatedTodos}));
+    if (!todo) return;
+    set(state => ({
+      todos: state.todos.map(t =>
+        t.id === todo.id ? {...t, isCompleted: !t.isCompleted} : t,
+      ),
+    }));
   },
 }));
 

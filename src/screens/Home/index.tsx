@@ -24,10 +24,12 @@ interface Props extends IMainStackProps<'Home'> {}
 
 const Home: FC<Props> = ({navigation}) => {
   const todos = useTodosStore().todos;
+  const currentTodo = useTodosStore().currentTodo;
   const notCompletedTodos = todos.filter((t: Todo) => t.isCompleted === false);
   const completedTodos = todos.filter((t: Todo) => t.isCompleted === true);
   const changeStatus = useTodosStore().changeStatus;
   const removeTodo = useTodosStore().deleteTodo;
+  const getDetails = useTodosStore().getTodoDetails;
   const modalizeRef = useRef<Modalize>(null);
 
   type ModalData = {
@@ -47,7 +49,7 @@ const Home: FC<Props> = ({navigation}) => {
       id: item.id,
       type: 'delete',
       title: item.title,
-      isCompleted: item.isCompleted,
+      isCompleted: false,
     });
     modalizeRef.current?.open();
   };
@@ -67,14 +69,17 @@ const Home: FC<Props> = ({navigation}) => {
   };
 
   const onDetail = (item: Todo) => {
-    setModalData({
-      id: item.id,
-      title: item.title,
-      type: 'view',
-      isCompleted: item.isCompleted,
-    });
+    getDetails(item.id);
     modalizeRef.current?.open();
   };
+  useEffect(() => {
+    setModalData({
+      id: currentTodo.id,
+      type: 'view',
+      title: currentTodo.title,
+      isCompleted: currentTodo.isCompleted,
+    });
+  }, [currentTodo]);
 
   return (
     <Background>
@@ -127,7 +132,7 @@ const Home: FC<Props> = ({navigation}) => {
           </View>
           {completedTodos.length > 0 ? (
             <View style={{rowGap: 10, paddingBottom: 20}}>
-              {completedTodos.map((t: Todo, i: number) => {
+              {completedTodos.map((t: Todo) => {
                 return (
                   <TodoItem
                     onStatusChange={() => changeStatus(t)}
@@ -170,6 +175,7 @@ const Home: FC<Props> = ({navigation}) => {
               overflow: 'hidden',
               marginBottom: Dimensions.get('window').height / 2,
             }}
+            handleStyle={{display: 'none'}}
             ref={modalizeRef}
             overlayStyle={{
               backgroundColor: 'rgba(106, 106, 168, 0.5)',
@@ -190,7 +196,7 @@ const Home: FC<Props> = ({navigation}) => {
                       Are you sure you want to delete
                     </Text>
                     <Text
-                      style={{color: 'red', fontWeight: '500', fontSize: 20}}>
+                      style={{color: 'red', fontWeight: '500', fontSize: 18}}>
                       {modalData.title} ?
                     </Text>
                   </View>
@@ -211,7 +217,7 @@ const Home: FC<Props> = ({navigation}) => {
                         paddingHorizontal: 10,
                         paddingVertical: 12,
                       }}>
-                      <Text style={{fontWeight: '500', color: 'black'}}>
+                      <Text style={{fontWeight: '500', color: 'white'}}>
                         CANCEL
                       </Text>
                     </Pressable>
